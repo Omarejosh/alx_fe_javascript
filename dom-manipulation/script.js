@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const newQuoteBtn = document.getElementById("newQuote");
     const formContainer = document.getElementById("formContainer");
     const categoryFilter = document.getElementById("categoryFilter");
-    const importFileInput = document.getElementById("importFile");
-    const exportJsonBtn = document.getElementById("exportJson");
     const syncStatus = document.getElementById("syncStatus"); // UI for sync notifications
 
     const SERVER_URL = "https://jsonplaceholder.typicode.com/posts"; // Simulated API
@@ -18,8 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("quotes", JSON.stringify(quotes));
     }
 
-    // Function to fetch quotes from the server (Simulated API)
-    async function fetchServerQuotes() {
+    // Function to fetch quotes from the server
+    async function fetchQuotesFromServer() {
         try {
             const response = await fetch(SERVER_URL);
             const serverQuotes = await response.json();
@@ -41,27 +39,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Function to merge server and local quotes (Conflict Resolution: Server Wins)
+    // Function to merge server and local quotes (Server Wins in Conflict)
     function mergeQuotes(serverQuotes, localQuotes) {
         const merged = [...serverQuotes, ...localQuotes.filter(local =>
             !serverQuotes.some(server => server.text === local.text)
         )];
         return merged;
-    }
-
-    // Function to send new quotes to the server (Simulation)
-    async function syncToServer(quote) {
-        try {
-            await fetch(SERVER_URL, {
-                method: "POST",
-                body: JSON.stringify(quote),
-                headers: { "Content-Type": "application/json" }
-            });
-            syncStatus.innerText = "✔ Quote synced to server!";
-        } catch (error) {
-            syncStatus.innerText = "⚠ Failed to sync to server!";
-            console.error("Sync to server failed:", error);
-        }
     }
 
     // Function to show a random quote
@@ -120,14 +103,14 @@ document.addEventListener("DOMContentLoaded", function () {
         quotes.push(newQuote);
         saveQuotes();
         populateCategories();
-        syncToServer(newQuote);
+        syncStatus.innerText = "✔ New quote added!";
 
         quoteDisplay.innerHTML = `<strong>${newQuoteText}</strong> <br> <em>- ${newQuoteCategory}</em>`;
         document.getElementById("newQuoteText").value = "";
         document.getElementById("newQuoteCategory").value = "";
     }
 
-    // Function to populate categories
+    // Function to populate categories dynamically
     function populateCategories() {
         const uniqueCategories = [...new Set(quotes.map(q => q.category))];
         localStorage.setItem("categories", JSON.stringify(uniqueCategories));
@@ -152,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Auto-sync with server every 30 seconds
-    setInterval(fetchServerQuotes, 30000);
+    setInterval(fetchQuotesFromServer, 30000);
 
     // Attach event listeners
     newQuoteBtn.addEventListener("click", showRandomQuote);
@@ -161,5 +144,5 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize form, categories, and fetch initial data
     createAddQuoteForm();
     populateCategories();
-    fetchServerQuotes();
+    fetchQuotesFromServer();
 });
