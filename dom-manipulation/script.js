@@ -16,26 +16,26 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("quotes", JSON.stringify(quotes));
     }
 
-    // Function to sync quotes with the server
-    async function syncQuotes() {
+    // Function to fetch quotes from the server
+    async function fetchQuotesFromServer() {
         try {
             const response = await fetch(SERVER_URL);
             const serverQuotes = await response.json();
 
-            // Convert API data into quote format
+            // Simulated: Convert API posts into quote format
             const formattedQuotes = serverQuotes.slice(0, 5).map(post => ({
                 text: post.title,
                 category: "Server Update"
             }));
 
-            // Merge server and local quotes (Server has priority)
+            // Merge with local quotes (Server takes precedence)
             quotes = mergeQuotes(formattedQuotes, quotes);
             saveQuotes();
             populateCategories();
-            syncStatus.innerText = "✔ Quotes synced successfully!";
+            syncStatus.innerText = "✔ Quotes synced with server!";
         } catch (error) {
-            syncStatus.innerText = "⚠ Error syncing quotes!";
-            console.error("Sync error:", error);
+            syncStatus.innerText = "⚠ Error syncing with server!";
+            console.error("Failed to sync quotes:", error);
         }
     }
 
@@ -51,21 +51,22 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             if (response.ok) {
-                syncStatus.innerText = "✔ Quote sent to server!";
+                syncStatus.innerText = "✔ Quote successfully sent to server!";
             } else {
-                syncStatus.innerText = "⚠ Failed to send quote!";
+                syncStatus.innerText = "⚠ Failed to send quote to server.";
             }
         } catch (error) {
             syncStatus.innerText = "⚠ Error sending quote!";
-            console.error("Post error:", error);
+            console.error("Error posting quote:", error);
         }
     }
 
-    // Function to merge server and local quotes
+    // Function to merge server and local quotes (Server Wins in Conflict)
     function mergeQuotes(serverQuotes, localQuotes) {
-        return [...serverQuotes, ...localQuotes.filter(local =>
+        const merged = [...serverQuotes, ...localQuotes.filter(local =>
             !serverQuotes.some(server => server.text === local.text)
         )];
+        return merged;
     }
 
     // Function to show a random quote
@@ -159,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Auto-sync with server every 30 seconds
-    setInterval(syncQuotes, 30000);
+    setInterval(fetchQuotesFromServer, 30000);
 
     // Attach event listeners
     newQuoteBtn.addEventListener("click", showRandomQuote);
@@ -168,5 +169,5 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize form, categories, and fetch initial data
     createAddQuoteForm();
     populateCategories();
-    syncQuotes();
+    fetchQuotesFromServer();
 });
