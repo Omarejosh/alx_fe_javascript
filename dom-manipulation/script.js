@@ -39,6 +39,28 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Function to send a new quote to the server
+    async function sendQuoteToServer(quote) {
+        try {
+            const response = await fetch(SERVER_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(quote)
+            });
+
+            if (response.ok) {
+                syncStatus.innerText = "✔ Quote successfully sent to server!";
+            } else {
+                syncStatus.innerText = "⚠ Failed to send quote to server.";
+            }
+        } catch (error) {
+            syncStatus.innerText = "⚠ Error sending quote!";
+            console.error("Error posting quote:", error);
+        }
+    }
+
     // Function to merge server and local quotes (Server Wins in Conflict)
     function mergeQuotes(serverQuotes, localQuotes) {
         const merged = [...serverQuotes, ...localQuotes.filter(local =>
@@ -104,6 +126,9 @@ document.addEventListener("DOMContentLoaded", function () {
         saveQuotes();
         populateCategories();
         syncStatus.innerText = "✔ New quote added!";
+
+        // Send new quote to server
+        sendQuoteToServer(newQuote);
 
         quoteDisplay.innerHTML = `<strong>${newQuoteText}</strong> <br> <em>- ${newQuoteCategory}</em>`;
         document.getElementById("newQuoteText").value = "";
