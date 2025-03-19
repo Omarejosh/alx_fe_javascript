@@ -7,21 +7,22 @@
 </head>
 <body>
     <h1>Dynamic Quote Generator</h1>
-
-    <!-- Sync Status Notification -->
-    <p id="syncStatus" style="color: green;"></p>
-
+    
+    <!-- Quote Display -->
+    <div id="quoteDisplay"></div>
+    
     <!-- Category Filter -->
-    <label for="categoryFilter">Filter by Category:</label>
-    <select id="categoryFilter">
+    <select id="categoryFilter" onchange="filterQuotes()">
         <option value="all">All Categories</option>
     </select>
 
-    <!-- Quote Display -->
-    <div id="quoteDisplay"></div>
+    <!-- Button to Show a New Quote -->
     <button id="newQuote">Show New Quote</button>
 
-    <!-- Quote Addition Form -->
+    <!-- Sync Status Indicator -->
+    <p id="syncStatus">🔄 Syncing...</p>
+
+    <!-- Form for Adding Quotes -->
     <div id="formContainer"></div>
 
     <script src="script.js"></script>

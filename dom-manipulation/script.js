@@ -16,9 +16,11 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("quotes", JSON.stringify(quotes));
     }
 
-    // Function to fetch quotes from the server
-    async function fetchQuotesFromServer() {
+    // Function to sync quotes with the server
+    async function syncQuotes() {
+        syncStatus.innerText = "🔄 Syncing with server...";
         try {
+            // Fetch latest quotes from the server
             const response = await fetch(SERVER_URL);
             const serverQuotes = await response.json();
 
@@ -28,45 +30,43 @@ document.addEventListener("DOMContentLoaded", function () {
                 category: "Server Update"
             }));
 
-            // Merge with local quotes (Server takes precedence)
+            // Merge with local quotes (server takes precedence)
             quotes = mergeQuotes(formattedQuotes, quotes);
             saveQuotes();
             populateCategories();
-            syncStatus.innerText = "✔ Quotes synced with server!";
+
+            // Send local quotes to server (simulated)
+            await syncLocalQuotesToServer();
+
+            syncStatus.innerText = "✔ Sync complete!";
         } catch (error) {
-            syncStatus.innerText = "⚠ Error syncing with server!";
-            console.error("Failed to sync quotes:", error);
+            syncStatus.innerText = "⚠ Error syncing!";
+            console.error("Sync failed:", error);
         }
     }
 
-    // Function to send a new quote to the server
-    async function sendQuoteToServer(quote) {
-        try {
-            const response = await fetch(SERVER_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(quote)
-            });
-
-            if (response.ok) {
-                syncStatus.innerText = "✔ Quote successfully sent to server!";
-            } else {
-                syncStatus.innerText = "⚠ Failed to send quote to server.";
+    // Function to send local quotes to the server
+    async function syncLocalQuotesToServer() {
+        for (const quote of quotes) {
+            try {
+                await fetch(SERVER_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(quote)
+                });
+            } catch (error) {
+                console.error("Failed to sync quote:", error);
             }
-        } catch (error) {
-            syncStatus.innerText = "⚠ Error sending quote!";
-            console.error("Error posting quote:", error);
         }
     }
 
     // Function to merge server and local quotes (Server Wins in Conflict)
     function mergeQuotes(serverQuotes, localQuotes) {
-        const merged = [...serverQuotes, ...localQuotes.filter(local =>
+        return [...serverQuotes, ...localQuotes.filter(local =>
             !serverQuotes.some(server => server.text === local.text)
         )];
-        return merged;
     }
 
     // Function to show a random quote
@@ -127,8 +127,8 @@ document.addEventListener("DOMContentLoaded", function () {
         populateCategories();
         syncStatus.innerText = "✔ New quote added!";
 
-        // Send new quote to server
-        sendQuoteToServer(newQuote);
+        // Sync new quote with the server
+        syncQuotes();
 
         quoteDisplay.innerHTML = `<strong>${newQuoteText}</strong> <br> <em>- ${newQuoteCategory}</em>`;
         document.getElementById("newQuoteText").value = "";
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Auto-sync with server every 30 seconds
-    setInterval(fetchQuotesFromServer, 30000);
+    setInterval(syncQuotes, 30000);
 
     // Attach event listeners
     newQuoteBtn.addEventListener("click", showRandomQuote);
@@ -169,5 +169,5 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize form, categories, and fetch initial data
     createAddQuoteForm();
     populateCategories();
-    fetchQuotesFromServer();
+    syncQuotes();
 });
