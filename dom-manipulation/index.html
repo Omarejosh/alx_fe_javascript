@@ -4,66 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Quote Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-            background-color: #f4f4f4;
-        }
-        #quoteContainer {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            display: inline-block;
-            max-width: 400px;
-        }
-        #quoteDisplay {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px 15px;
-            margin: 5px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-        #newQuote {
-            background-color: #007bff;
-            color: white;
-        }
-        #addQuoteBtn {
-            background-color: #28a745;
-            color: white;
-        }
-        input {
-            padding: 8px;
-            margin: 5px;
-            width: 80%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
 </head>
 <body>
-
     <h1>Dynamic Quote Generator</h1>
 
-    <div id="quoteContainer">
-        <p id="quoteDisplay">Click the button to get a quote!</p>
-        <button id="newQuote">Show New Quote</button>
-    </div>
+    <!-- Quote Display -->
+    <div id="quoteDisplay"></div>
+    <button id="newQuote">Show New Quote</button>
 
-    <div>
-        <h2>Add a New Quote</h2>
-        <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
-        <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
-        <button id="addQuoteBtn">Add Quote</button>
-    </div>
+    <!-- Quote Addition Form -->
+    <div id="formContainer"></div>
+
+    <!-- JSON Import/Export -->
+    <h3>Import/Export Quotes</h3>
+    <input type="file" id="importFile" accept=".json" />
+    <button id="exportJson">Export Quotes</button>
 
     <script src="script.js"></script>
-
 </body>
 </html>
