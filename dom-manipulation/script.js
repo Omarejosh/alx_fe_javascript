@@ -9,9 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Select elements
     const quoteDisplay = document.getElementById("quoteDisplay");
     const newQuoteBtn = document.getElementById("newQuote");
-    const addQuoteBtn = document.getElementById("addQuoteBtn");
-    const newQuoteText = document.getElementById("newQuoteText");
-    const newQuoteCategory = document.getElementById("newQuoteCategory");
+    const formContainer = document.getElementById("formContainer");
 
     // Function to display a random quote
     function showRandomQuote() {
@@ -22,30 +20,44 @@ document.addEventListener("DOMContentLoaded", function () {
         quoteDisplay.innerHTML = `<strong>${randomQuote.text}</strong> <br> <em>- ${randomQuote.category}</em>`;
     }
 
+    // Function to dynamically create the "Add Quote" form
+    function createAddQuoteForm() {
+        formContainer.innerHTML = `
+            <input id="newQuoteText" type="text" placeholder="Enter a new quote">
+            <input id="newQuoteCategory" type="text" placeholder="Enter quote category">
+            <button id="addQuoteBtn">Add Quote</button>
+        `;
+
+        // Attach event listener to the newly created button
+        document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
+    }
+
     // Function to add a new quote
     function addQuote() {
-        const text = newQuoteText.value.trim();
-        const category = newQuoteCategory.value.trim();
+        const newQuoteText = document.getElementById("newQuoteText").value.trim();
+        const newQuoteCategory = document.getElementById("newQuoteCategory").value.trim();
 
-        if (text === "" || category === "") {
+        if (newQuoteText === "" || newQuoteCategory === "") {
             alert("Please enter both a quote and a category.");
             return;
         }
 
         // Add new quote to the array
-        quotes.push({ text, category });
+        quotes.push({ text: newQuoteText, category: newQuoteCategory });
 
         // Update the UI with the new quote
-        quoteDisplay.innerHTML = `<strong>${text}</strong> <br> <em>- ${category}</em>`;
+        quoteDisplay.innerHTML = `<strong>${newQuoteText}</strong> <br> <em>- ${newQuoteCategory}</em>`;
 
         // Clear input fields
-        newQuoteText.value = "";
-        newQuoteCategory.value = "";
+        document.getElementById("newQuoteText").value = "";
+        document.getElementById("newQuoteCategory").value = "";
     }
 
     // Event listeners
     newQuoteBtn.addEventListener("click", showRandomQuote);
-    addQuoteBtn.addEventListener("click", addQuote);
+
+    // Create the add-quote form when the page loads
+    createAddQuoteForm();
 
     // Display an initial quote
     showRandomQuote();
